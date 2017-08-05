@@ -25,6 +25,7 @@ func (p person) String() string{
 
 const MAX uint64 = 10
 
+
 func main() {
 	work := make(chan uint64, MAX)
 	result := make(chan uint64)
