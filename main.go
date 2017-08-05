@@ -3,7 +3,7 @@ import "fmt"
 
 type person struct {
 	name string
-	age int
+	age uint64
 }
 
 type Stringer interface {
@@ -18,16 +18,47 @@ func (p person) String() string{
 	return fmt.Sprintf("%-10s %-10d", p.name, p.age)
 }
 
-func (p person) Integer() int{
-	return p.age
-}
+//var human person = person {
+//	"euiko",
+//	10,
+//}
 
-var human person = person {
-	"euiko",
-	10,
-}
+const MAX uint64 = 10
 
 func main() {
-	fmt.Println(header())
-	fmt.Print(human)
+	work := make(chan uint64, MAX)
+	result := make(chan uint64)
+
+	go func(){
+		println("Generating Work value")
+		for i := uint64(1); i < MAX ; i++{
+			if (i % 3) == 0 || (i % 5) == 0{
+				work <- i
+			}
+		}
+		println("Work value have been generated")
+		close(work)
+	}()
+
+
+	go func() {
+		r := uint64(0)
+		s_work := fmt.Sprintf("work length %d", len(work))
+		println(s_work)
+		println("Counting result")
+		s := ""
+		for i := range work {
+			s += fmt.Sprintf("Work count is %d %d \n ", len(work), i)
+			r = r + i
+		}
+		result <- r
+		println(s)
+
+		s_work = fmt.Sprintf("work length %d", len(work))
+		println(s_work)
+		println("Result counted")
+	}()
+
+	println(<-result)
+	//fmt.Println("Kharis",<-result)
 }
